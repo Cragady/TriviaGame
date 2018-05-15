@@ -13,10 +13,13 @@ in any order)*/
 correctly/wrongly answered*/
 //create start over button that doesn't refresh page
 //prettify the game, but do this last
+//add clear interval with a gameEnd
 
 
 
-var timeOut = false;
+var questTimeout = false;
+var secRemain = 3;
+var totalTime = 0;
 
 var triviaGo = {
     questionsList: [
@@ -24,8 +27,50 @@ var triviaGo = {
         "I'll think of something", 
         "And It'll have a nice theme to it too."
     ],
+
+    timerSet: function(){
+        $("#timer-space").text("Time left:" + secRemain);
+    },
+
+    mainTimer: setInterval(function(){triviaGo.mainEvents();}, 1000),
     
-    questionTimeout: function(){
-        $("#timer-space").text()
+    mainEvents: function(){
+        console.log(totalTime);
+        totalTime++;            
+        if (questTimeout === false){
+            triviaGo.timeoutChecker();
+            triviaGo.activeQuestion();
+            triviaGo.timesUp();
+        }
+    },
+
+    timeoutChecker: function(){
+        if (secRemain === 0){
+            questTimeout = true;
+        };
+    },
+
+    activeQuestion: function(){
+        if (questTimeout === false){
+            secRemain--;
+            $("#timer-space").text("Time left:" + secRemain);
+        }
+    },
+
+    timesUp: function(){
+        if (questTimeout){
+            console.log("oh no!");
+            console.log(totalTime);
+            triviaGo.triviaEnd();
+        }
+    },
+
+    triviaEnd: function(){
+        clearInterval(triviaGo.mainTimer);
     },
 };
+
+$(document).ready(function(){
+    triviaGo.timerSet();
+    triviaGo.mainTimer;
+});
