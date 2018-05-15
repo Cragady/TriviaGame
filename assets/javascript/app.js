@@ -18,6 +18,7 @@ correctly/wrongly answered*/
 
 
 var questTimeout = false;
+var marchingTimer;
 var secRemain = 3;
 var totalTime = 0;
 
@@ -32,16 +33,28 @@ var triviaGo = {
         $("#timer-space").text("Time left:" + secRemain);
     },
 
-    mainTimer: setInterval(function(){triviaGo.mainEvents();}, 1000),
+    mainTimer: function(){
+        marchingTimer = setInterval(function(){triviaGo.mainEvents();}, 1000);
+    },
     
     mainEvents: function(){
-        console.log(totalTime);
-        totalTime++;            
+                   
         if (questTimeout === false){
             triviaGo.timeoutChecker();
             triviaGo.activeQuestion();
             triviaGo.timesUp();
         }
+        console.log(totalTime);
+        totalTime++; 
+    },
+
+    secondaryEvents: function(){
+        triviaGo.timerSet();
+        questTimeout = false;
+        setTimeout(function(){
+            console.log("FIRE!!");
+            triviaGo.mainTimer();
+        }, 3000)
     },
 
     timeoutChecker: function(){
@@ -61,16 +74,18 @@ var triviaGo = {
         if (questTimeout){
             console.log("oh no!");
             console.log(totalTime);
-            triviaGo.triviaEnd();
+            secRemain = 4;
+            this.triviaEnd();
+            this.secondaryEvents();
         }
     },
 
     triviaEnd: function(){
-        clearInterval(triviaGo.mainTimer);
+        clearInterval(marchingTimer);
     },
 };
 
 $(document).ready(function(){
     triviaGo.timerSet();
-    triviaGo.mainTimer;
+    triviaGo.mainTimer();
 });
