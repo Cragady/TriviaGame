@@ -61,6 +61,7 @@ var triviaGo = {
         $("#timer-space").text("Time left:" + secRemain);
         $("#question").text(this.questionsList[passedQuestions]);
         triviaGo.answersRandomizer();
+        triviaGo.guessClicked();
 
     },
 
@@ -116,11 +117,11 @@ var triviaGo = {
         }
     },
 
-    timeoutChecker: function(){
-        if (secRemain === 0){
-            questTimeout = true;
-        };
-    },
+    // timeoutChecker: function(){
+    //     if (secRemain === 0){
+    //         questTimeout = true;
+    //     };
+    // },
 
     activeQuestion: function(){
         if (questTimeout === false){
@@ -169,27 +170,31 @@ var triviaGo = {
         $("#main-area").css("display", "none");
         $("#status-update").css("display", "flex");
         secRemain = 4;
+        passedQuestions++;
         clearInterval(marchingTimer);
         $("#choices-column").empty();
     },
 
     statusChecker: function(){
-        this.timeoutChecker();
+        if (secRemain === 0){
+            questTimeout = true;
+        };
         if (passedQuestions === (triviaGo.questionsList.length -1)){
             gameEnd = true;
-        } else if (questTimeout){
-            passedQuestions++;
-        } else if (trueAnswer){
-            passedQuestions++;
-        } else if (falseAnswer){
-            passedQuestions++;
-        ;} 
+        };
 
     },
 
-    // guessClicked: function(){
-    //     var userGuess = 
-    // }
+    guessClicked: function(){
+        $("div").click(function(){
+        var userGuess = $(this).attr("id");
+            if (userGuess === "correct"){
+                triviaGo.guessRight();
+            } else if (userGuess === "incorrect"){
+                triviaGo.guessWrong();
+            }
+        })
+    }
 };
 
 $(document).ready(function(){
