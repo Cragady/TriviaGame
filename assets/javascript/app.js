@@ -27,7 +27,6 @@ var questTimeout = false;
 var marchingTimer;
 var passedQuestions = 0;
 var secRemain = 3;
-var totalTime = 0;
 var correct = 0;
 var incorrect = 0;
 var trueAnswer = false;
@@ -41,17 +40,27 @@ var triviaGo = {
     ],
 
     answersList: [
-        "1",
-        "2",
-        "3"
+        "true1",
+        "true2",
+        "true3"
     ],
 
+    arrayOfFunk: [
+        "correctAnswerSet",
+        "wrongAnswerSet",
+        "wrongAnswerSet",
+        "wrongAnswerSet"
+
+    ],
+
+    newDiv: $("<div>"),
+
     timerSet: function(){
-        var newDiv = $("<div>");
         $("#main-area").css("display", "flex");
+        $("#status-update").css("display", "none");
         $("#timer-space").text("Time left:" + secRemain);
         $("#question").text(this.questionsList[passedQuestions]);
-        triviaGo.answersSet();
+        triviaGo.answersRandomizer();
 
     },
 
@@ -66,8 +75,6 @@ var triviaGo = {
             this.activeQuestion();
             this.timesUp();
         }
-        console.log(totalTime);
-        totalTime++; 
     },
 
     secondaryEvents: function(){
@@ -79,10 +86,34 @@ var triviaGo = {
         }, 3000)
     },
 
-    answersSet: function(){
-        var newDiv = $("<div>");
-        $("#choices-column").append(newDiv);
-        newDiv.text(triviaGo.answersList[passedQuestions]);
+    correctAnswerSet: function(){
+        var answerSlot = $("<div>");
+        var correctAnswer = answerSlot.text(triviaGo.answersList[passedQuestions]);
+        $(correctAnswer).attr("id", "correct");
+        $("#choices-column").append(answerSlot);
+    },
+
+    wrongAnswerSet: function(){
+        var answerSlot = $("<div>");
+        var incorrectAnswer = answerSlot.text("lololol");
+        $(incorrectAnswer).attr("id", "incorrect");
+        $("#choices-column").append(answerSlot);
+    },
+
+    answersRandomizer: function(){
+        var nonRepeat = [];
+        var rand = Math.round(Math.random() * 3);
+        for (i = 0; i < this.arrayOfFunk.length; i++){
+            while (nonRepeat.includes(rand)){
+                rand = Math.round(Math.random() * 3);
+                console.log(rand);
+            }
+            console.log(rand);
+            nonRepeat.push(rand);
+            var setter = this[triviaGo.arrayOfFunk[rand]]();
+            setter;
+            
+        }
     },
 
     timeoutChecker: function(){
@@ -99,28 +130,35 @@ var triviaGo = {
     },
 
     guessRight: function(){
+        this.triviaEnd();
         correct++;
-        $("main-area").css("display", "none");
-        $("#status-update").append($("<div>"));
-        $("<div>").text("You have chosen. . . wisely");
+        $("#status-update").append(triviaGo.newDiv);
+        triviaGo.newDiv.text("You have chosen. . . wisely");
+        if (gameEnd){
+            return;
+        };
+        this.secondaryEvents();
 
     },
 
     guessWrong: function(){
+        this.triviaEnd();
         incorrect++;
-        $("main-area").css("display", "none");
-        $("#status-update").append($("<div>"));
-        $("<div>").text("You have chosen. . . poorly");
-
+        $("#status-update").append(triviaGo.newDiv);
+        triviaGo.newDiv.text("You have chosen. . . poorly");
+        if (gameEnd){
+            return;
+        };
+        this.secondaryEvents();
     },
 
     timesUp: function(){
         if (questTimeout){
-            console.log("oh no!");
-            console.log(totalTime);
+            incorrect++;
             this.triviaEnd();
+            $("#status-update").append(triviaGo.newDiv);
+            triviaGo.newDiv.text("Times up!");
             if (gameEnd){
-                $("#main-area").css("display", "none");
                 return;
             };
             this.secondaryEvents();
@@ -129,6 +167,7 @@ var triviaGo = {
 
     triviaEnd: function(){
         $("#main-area").css("display", "none");
+        $("#status-update").css("display", "flex");
         secRemain = 4;
         clearInterval(marchingTimer);
         $("#choices-column").empty();
@@ -147,6 +186,10 @@ var triviaGo = {
         ;} 
 
     },
+
+    // guessClicked: function(){
+    //     var userGuess = 
+    // }
 };
 
 $(document).ready(function(){
