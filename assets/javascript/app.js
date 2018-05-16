@@ -1,7 +1,13 @@
 //create array for questionsList
 /*come up with storage for correct answers, maybe
 turn questions list into object with answers too, or
-not, as long as it works*/
+not, as long as it works. One idea is to set them
+to corresponding spots in an array with the questions.
+Another option is to just put them in a correct answers
+array and use an if statement checking if it's in that
+array; this option may be limiting, but having the same
+answer for another question later may not be the best thing
+in this trivia game so it may be fine*/
 /*put in a few wrong answers and the right answer
 that corresponds to the quiestion*/
 //create method for countdown on each question
@@ -19,9 +25,14 @@ correctly/wrongly answered*/
 
 var questTimeout = false;
 var marchingTimer;
+var passedQuestions = 0;
 var secRemain = 3;
 var totalTime = 0;
-
+var correct = 0;
+var incorrect = 0;
+var trueAnswer = false;
+var falseAnswer = false;
+var gameEnd = false;
 var triviaGo = {
     questionsList: [
         "What should go here?", 
@@ -29,8 +40,19 @@ var triviaGo = {
         "And It'll have a nice theme to it too."
     ],
 
+    answersList: [
+        "1",
+        "2",
+        "3"
+    ],
+
     timerSet: function(){
+        var newDiv = $("<div>");
+        $("#main-area").css("display", "flex");
         $("#timer-space").text("Time left:" + secRemain);
+        $("#question").text(this.questionsList[passedQuestions]);
+        triviaGo.answersSet();
+
     },
 
     mainTimer: function(){
@@ -38,23 +60,29 @@ var triviaGo = {
     },
     
     mainEvents: function(){
-                   
         if (questTimeout === false){
-            triviaGo.timeoutChecker();
-            triviaGo.activeQuestion();
-            triviaGo.timesUp();
+            $("#main-area").css("display", "flex");
+            this.statusChecker();
+            this.activeQuestion();
+            this.timesUp();
         }
         console.log(totalTime);
         totalTime++; 
     },
 
     secondaryEvents: function(){
-        triviaGo.timerSet();
         questTimeout = false;
         setTimeout(function(){
+            triviaGo.timerSet();
             console.log("FIRE!!");
             triviaGo.mainTimer();
         }, 3000)
+    },
+
+    answersSet: function(){
+        var newDiv = $("<div>");
+        $("#choices-column").append(newDiv);
+        newDiv.text(triviaGo.answersList[passedQuestions]);
     },
 
     timeoutChecker: function(){
@@ -66,22 +94,58 @@ var triviaGo = {
     activeQuestion: function(){
         if (questTimeout === false){
             secRemain--;
-            $("#timer-space").text("Time left:" + secRemain);
+            $("#timer-space").text("Time left: " + secRemain);
         }
+    },
+
+    guessRight: function(){
+        correct++;
+        $("main-area").css("display", "none");
+        $("#status-update").append($("<div>"));
+        $("<div>").text("You have chosen. . . wisely");
+
+    },
+
+    guessWrong: function(){
+        incorrect++;
+        $("main-area").css("display", "none");
+        $("#status-update").append($("<div>"));
+        $("<div>").text("You have chosen. . . poorly");
+
     },
 
     timesUp: function(){
         if (questTimeout){
             console.log("oh no!");
             console.log(totalTime);
-            secRemain = 4;
             this.triviaEnd();
+            if (gameEnd){
+                $("#main-area").css("display", "none");
+                return;
+            };
             this.secondaryEvents();
         }
     },
 
     triviaEnd: function(){
+        $("#main-area").css("display", "none");
+        secRemain = 4;
         clearInterval(marchingTimer);
+        $("#choices-column").empty();
+    },
+
+    statusChecker: function(){
+        this.timeoutChecker();
+        if (passedQuestions === (triviaGo.questionsList.length -1)){
+            gameEnd = true;
+        } else if (questTimeout){
+            passedQuestions++;
+        } else if (trueAnswer){
+            passedQuestions++;
+        } else if (falseAnswer){
+            passedQuestions++;
+        ;} 
+
     },
 };
 
