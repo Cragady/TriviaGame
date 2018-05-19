@@ -2,6 +2,36 @@ html, body{
     height: 100%;
 }
 
+body{
+    background: url(../images/SM3-bg.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.hstyles{
+    text-shadow: -1.5px 0 black, 0 1.5px black, 1.5px 0 black, 0 -1.5px black;
+    color: rgb(54, 124, 182);
+}
+
+.dstyles{
+    background: rgba(89, 214, 208, 0.781);
+    width: 150px;
+}
+
+.cstyles{
+    min-height: 250px;
+}
+
+.main-area-bg{
+    background: url(../images/p4gbg.jpg);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.cust-faded-bg{
+    background: rgba(255, 255, 255, 0.849);
+}
+
 #wrap{
     min-height: 100%;
 }

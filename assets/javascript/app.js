@@ -26,12 +26,13 @@ correctly/wrongly answered*/
 var questTimeout = false;
 var marchingTimer;
 var passedQuestions = 0;
-var secRemain = 3;
+var secRemain = 45;
 var correct = 0;
 var incorrect = 0;
 var trueAnswer = false;
 var falseAnswer = false;
 var gameEnd = false;
+var wrongAnswersArray = [];
 var triviaGo = {
     questionsList: [
         "What should go here?", 
@@ -53,12 +54,29 @@ var triviaGo = {
 
     ],
 
+    wrongArray: [
+        "rando1",
+        "rando2",
+        "rando3",
+        "rando4",
+        "rando5",
+        "rando6",
+        "rando7",
+        "rando8",
+        "rando9",
+        "rando10",
+        "rando11",
+        "rando12",
+        "rando13",
+        "rando14",
+    ],
+
     newDiv: $("<div>"),
 
     timerSet: function(){
         $("#main-area").css("display", "flex");
         $("#status-update").css("display", "none");
-        $("#timer-space").text("Time left:" + secRemain);
+        $("#timer-space").text("Time left: " + secRemain);
         $("#question").text(this.questionsList[passedQuestions]);
         triviaGo.answersRandomizer();
         triviaGo.guessClicked();
@@ -79,10 +97,15 @@ var triviaGo = {
     },
 
     secondaryEvents: function(){
+        if (gameEnd){
+            setTimeout(function(){
+                triviaGo.gameEndScreen();
+            }, 2000);
+            return;
+        };
         questTimeout = false;
         setTimeout(function(){
             triviaGo.timerSet();
-            console.log("FIRE!!");
             triviaGo.mainTimer();
         }, 3000)
     },
@@ -91,14 +114,22 @@ var triviaGo = {
         var answerSlot = $("<div>");
         var correctAnswer = answerSlot.text(triviaGo.answersList[passedQuestions]);
         $(correctAnswer).attr("id", "correct");
+        $(correctAnswer).attr("class", "dstyles text-center py-1 my-1 mx-auto");
         $("#choices-column").append(answerSlot);
     },
 
     wrongAnswerSet: function(){
+        var rand = Math.round(Math.random() * triviaGo.wrongArray.length);
+        while (wrongAnswersArray.includes(triviaGo.wrongArray[rand])){
+            rand = Math.round(Math.random() * triviaGo.wrongArray.length);
+        };
+        wrongAnswersArray.push(rand);
         var answerSlot = $("<div>");
-        var incorrectAnswer = answerSlot.text("lololol");
+        var incorrectAnswer = answerSlot.text(triviaGo.wrongArray[rand]);
         $(incorrectAnswer).attr("id", "incorrect");
+        $(incorrectAnswer).attr("class", "dstyles text-center py-1 my-1 mx-auto");
         $("#choices-column").append(answerSlot);
+        
     },
 
     answersRandomizer: function(){
@@ -107,21 +138,13 @@ var triviaGo = {
         for (i = 0; i < this.arrayOfFunk.length; i++){
             while (nonRepeat.includes(rand)){
                 rand = Math.round(Math.random() * 3);
-                console.log(rand);
             }
-            console.log(rand);
             nonRepeat.push(rand);
             var setter = this[triviaGo.arrayOfFunk[rand]]();
             setter;
             
         }
     },
-
-    // timeoutChecker: function(){
-    //     if (secRemain === 0){
-    //         questTimeout = true;
-    //     };
-    // },
 
     activeQuestion: function(){
         if (questTimeout === false){
@@ -134,10 +157,8 @@ var triviaGo = {
         this.triviaEnd();
         correct++;
         $("#status-update").append(triviaGo.newDiv);
-        triviaGo.newDiv.text("You have chosen. . . wisely");
-        if (gameEnd){
-            return;
-        };
+        $(triviaGo.newDiv).attr("class", "bg-faded text-success mx-auto");
+        triviaGo.newDiv.html("<h2>You have chosen. . . wisely</h2>");
         this.secondaryEvents();
 
     },
@@ -146,10 +167,8 @@ var triviaGo = {
         this.triviaEnd();
         incorrect++;
         $("#status-update").append(triviaGo.newDiv);
-        triviaGo.newDiv.text("You have chosen. . . poorly");
-        if (gameEnd){
-            return;
-        };
+        $(triviaGo.newDiv).attr("class", "bg-faded text-danger mx-auto");
+        triviaGo.newDiv.html("<h2>You have chosen. . . poorly</h2><br>" + "The correct answer is: " + triviaGo.answersList[passedQuestions - 1]);
         this.secondaryEvents();
     },
 
@@ -158,10 +177,8 @@ var triviaGo = {
             incorrect++;
             this.triviaEnd();
             $("#status-update").append(triviaGo.newDiv);
-            triviaGo.newDiv.text("Times up!");
-            if (gameEnd){
-                return;
-            };
+            $(triviaGo.newDiv).attr("class", "bg-faded text-danger mx-auto");
+            triviaGo.newDiv.html("<h2>Times up!</h2><br>" + "The correct answer is: " + triviaGo.answersList[passedQuestions - 1]);
             this.secondaryEvents();
         }
     },
@@ -169,7 +186,7 @@ var triviaGo = {
     triviaEnd: function(){
         $("#main-area").css("display", "none");
         $("#status-update").css("display", "flex");
-        secRemain = 4;
+        secRemain = 45;
         passedQuestions++;
         clearInterval(marchingTimer);
         $("#choices-column").empty();
@@ -193,6 +210,37 @@ var triviaGo = {
             } else if (userGuess === "incorrect"){
                 triviaGo.guessWrong();
             }
+        })
+    },
+
+    gameEndScreen: function(){
+        this.triviaEnd();
+        $("#status-update").append(triviaGo.newDiv);
+        $(triviaGo.newDiv).attr("class", "bg-faded text-success mx-auto");
+        triviaGo.newDiv.html("<h2> Game End </h2><br>" +
+            "Number Correct:  " + correct + "<br>" +
+            "Number Incorrect:  " + incorrect
+        )
+        this.resetButton();
+    },
+
+    resetButton: function(){
+        rstbtn = $("<button>");
+        $("#status-update").append(this.newDiv);
+        $(this.newDiv).append(rstbtn);
+        $(rstbtn).attr("class", "bg-info col-12");
+        rstbtn.text("Reset");
+        $(rstbtn).click(function(){
+            questTimeout = false;
+            passedQuestions = 0;
+            correct = 0;
+            incorrect = 0;
+            trueAnswer = false;
+            falseAnswer = false;
+            gameEnd = false;
+            wrongAnswersArray = [];
+            triviaGo.timerSet();
+            triviaGo.mainTimer();
         })
     }
 };
