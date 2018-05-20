@@ -35,15 +35,17 @@ var gameEnd = false;
 var wrongAnswersArray = [];
 var triviaGo = {
     questionsList: [
-        "What should go here?", 
-        "I'll think of something", 
-        "And It'll have a nice theme to it too."
+        "What is the T.V. program that is rumored to show you your soulmate at a certain time?", 
+        "Who is the Main character in Persona 4?", 
+        "What Type of game is Persona 4?",
+        "Where does this background music typically play?"
     ],
 
     answersList: [
-        "true1",
-        "true2",
-        "true3"
+        "The Midnight Channel",
+        "Yu Narukami",
+        "JRPG/Dungeon Crawler",
+        "The Velvet Room"
     ],
 
     arrayOfFunk: [
@@ -54,22 +56,12 @@ var triviaGo = {
 
     ],
 
-    wrongArray: [
-        "rando1",
-        "rando2",
-        "rando3",
-        "rando4",
-        "rando5",
-        "rando6",
-        "rando7",
-        "rando8",
-        "rando9",
-        "rando10",
-        "rando11",
-        "rando12",
-        "rando13",
-        "rando14",
-    ],
+    wrongObjArray: {
+        question1: ["The Evening Channel", "The Daytime Show", "Love at Twilight"],
+        question2: ["Rise Kujikawa", "Yosuke Hanamura", "Chie Satonaka"],
+        question3: ["FPS", "Fighter", "Racing/Adventure"],
+        question4: ["Yukiko's Castle", "Void Quest", "Heaven"]
+    },
 
     newDiv: $("<div>"),
 
@@ -119,13 +111,14 @@ var triviaGo = {
     },
 
     wrongAnswerSet: function(){
-        var rand = Math.round(Math.random() * triviaGo.wrongArray.length);
-        while (wrongAnswersArray.includes(triviaGo.wrongArray[rand])){
-            rand = Math.round(Math.random() * triviaGo.wrongArray.length);
+        var triviaGoHolder = triviaGo.wrongObjArray[Object.keys(triviaGo.wrongObjArray)[passedQuestions]];
+        var rand = Math.floor(Math.random() * triviaGoHolder.length);
+        while (wrongAnswersArray.includes(rand)){
+            rand = Math.floor(Math.random() * triviaGoHolder.length);
         };
         wrongAnswersArray.push(rand);
         var answerSlot = $("<div>");
-        var incorrectAnswer = answerSlot.text(triviaGo.wrongArray[rand]);
+        var incorrectAnswer = answerSlot.text(triviaGoHolder[rand]);
         $(incorrectAnswer).attr("id", "incorrect");
         $(incorrectAnswer).attr("class", "dstyles text-center py-1 my-1 mx-auto");
         $("#choices-column").append(answerSlot);
@@ -134,6 +127,7 @@ var triviaGo = {
 
     answersRandomizer: function(){
         var nonRepeat = [];
+        wrongAnswersArray = [];
         var rand = Math.round(Math.random() * 3);
         for (i = 0; i < this.arrayOfFunk.length; i++){
             while (nonRepeat.includes(rand)){
@@ -242,10 +236,26 @@ var triviaGo = {
             triviaGo.timerSet();
             triviaGo.mainTimer();
         })
+    },
+
+    playSong: function() {
+        $("#velvet-room").get(0).play();
+    },
+
+    clickMeToStart: function(){
+        startButton = $("<button>");
+        startButton.attr("class", "mx-auto bg-info")
+        startButton.text("Start Game");
+        $("#status-update").append(startButton);
+        $(startButton).click(function(){
+            triviaGo.playSong();
+            triviaGo.timerSet();
+            triviaGo.mainTimer();
+            $(startButton).detach();
+        });
     }
 };
 
 $(document).ready(function(){
-    triviaGo.timerSet();
-    triviaGo.mainTimer();
+    triviaGo.clickMeToStart();
 });
