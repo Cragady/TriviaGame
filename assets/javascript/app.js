@@ -26,7 +26,7 @@ correctly/wrongly answered*/
 var questTimeout = false;
 var marchingTimer;
 var passedQuestions = 0;
-var secRemain = 45;
+var secRemain = 30;
 var correct = 0;
 var incorrect = 0;
 var trueAnswer = false;
@@ -38,14 +38,21 @@ var triviaGo = {
         "What is the T.V. program that is rumored to show you your soulmate at a certain time?", 
         "Who is the Main character in Persona 4?", 
         "What Type of game is Persona 4?",
-        "Where does this background music typically play?"
+        "Where does this background music typically play?",
+        "What major arcana sign is Yu Narukami?",
+        "What mechanic boosts the strength of a persona when fusing?",
+        "Which character has the major arcana sign 'The Lovers'?"
     ],
 
     answersList: [
         "The Midnight Channel",
         "Yu Narukami",
         "JRPG/Dungeon Crawler",
-        "The Velvet Room"
+        "The Velvet Room",
+        "The Fool",
+        "Social Links",
+        "Rise Kujikawa"
+        
     ],
 
     arrayOfFunk: [
@@ -60,7 +67,10 @@ var triviaGo = {
         question1: ["The Evening Channel", "The Daytime Show", "Love at Twilight"],
         question2: ["Rise Kujikawa", "Yosuke Hanamura", "Chie Satonaka"],
         question3: ["FPS", "Fighter", "Racing/Adventure"],
-        question4: ["Yukiko's Castle", "Void Quest", "Heaven"]
+        question4: ["Yukiko's Castle", "Void Quest", "Heaven"],
+        question5: ["The Magician", "The Hierophant", "Strength"],
+        question6: ["Mental Clarity", "Time of day", "Certain Items Used"],
+        question7: ["Yu Narukami", "Chie Satonaka", "Teddie"]
     },
 
     newDiv: $("<div>"),
@@ -92,7 +102,7 @@ var triviaGo = {
         if (gameEnd){
             setTimeout(function(){
                 triviaGo.gameEndScreen();
-            }, 2000);
+            }, 1500);
             return;
         };
         questTimeout = false;
@@ -138,6 +148,7 @@ var triviaGo = {
             setter;
             
         }
+        triviaGo.mouseHover();
     },
 
     activeQuestion: function(){
@@ -180,7 +191,7 @@ var triviaGo = {
     triviaEnd: function(){
         $("#main-area").css("display", "none");
         $("#status-update").css("display", "flex");
-        secRemain = 45;
+        secRemain = 30;
         passedQuestions++;
         clearInterval(marchingTimer);
         $("#choices-column").empty();
@@ -253,6 +264,17 @@ var triviaGo = {
             triviaGo.mainTimer();
             $(startButton).detach();
         });
+    },
+
+    mouseHover: function(){
+        ansTargeter = $("#choices-column > div");
+        ansTargeter.hover(
+            function() {
+                $(this).css("background", "pink");
+            }, function () {
+                $(this).css("background", "");
+            }
+        );
     }
 };
 
