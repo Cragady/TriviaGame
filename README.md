@@ -1,3 +1,5 @@
+[Application](https://cragady.github.io/TriviaGame/)
+
 <h1>Brief Description</h1>
 
 The purpose of this project is to build a simple trivia game using jquery and timers. The user is shown a question and four possible answers. The user has to pick an answer correctly before the timer runs down for the answer to count towards the total number guessed correctly.
